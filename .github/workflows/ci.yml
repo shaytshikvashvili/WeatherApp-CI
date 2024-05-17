@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: shayts/weatherapp
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: shaytshikvashvili/WeatherApp-CD
+          path: cd-repo
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update image tag in CD repo
+        id: update_image
+        run: |
+          cd cd-repo/dev/
+          sed -i "s,IMAGE_NAME,shayts/weatherapp:${{ steps.meta.outputs.tags }}," deployment.yaml
+          git config user.name "CI Pipeline"
+          git config user.email "ci-pipeline@shaytshikvashvili.com"
+          git add deployment.yaml
+          git commit -m "Update image to ${{ steps.meta.outputs.tags }}"
+          git push
