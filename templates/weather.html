@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Information</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4 mb-4">Weather Information</h1>
+        <h2>Location: {{ weather.location }}</h2>
+        <h2>Country: {{ weather.country }}</h2>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Day Tempature</th>
+                    <th>Night Tempature</th>
+                    <th>Humidity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for date, day in weather.items() %}
+                	{% if date != 'location' and date != 'country' %}
+                		<tr>
+                    		<td>{{ date }}</td>
+                    		<td>{{ day.max_temp_c }}</td>
+                    		<td>{{ day.min_temp_c }}</td>
+                    		<td>{{ day.avg_humidity }}</td>
+                		</tr>
+                	{% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include Bootstrap JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>
+
