@@ -43,9 +43,9 @@ jobs:
         id: update_image
         run: |
           cd cd-repo/dev/
-          sed -i "s#IMAGE_NAME#${{ steps.meta.outputs.tags }}#" deployment.yaml
+          sed -i "s/IMAGE_NAME/${{steps.meta.outputs.tags}}/" deployment.yaml
           git config user.name "CI Pipeline"
           git config user.email "ci-pipeline@shaytshikvashvili.com"
           git add deployment.yaml
-          git commit -m "Update image to ${{ steps.meta.outputs.tags }}"
+          git commit -m "Update image to ${{steps.meta.outputs.tags}}"
           git push
