@@ -43,7 +43,7 @@ jobs:
         id: update_image
         run: |
           cd cd-repo/dev/
-          sed -i "s,IMAGE_NAME,shayts/weatherapp:${{ steps.meta.outputs.tags }}," deployment.yaml
+          sed -i "s/IMAGE_NAME/shayts/weatherapp:${{ steps.meta.outputs.tags }}/" deployment.yaml
           git config user.name "CI Pipeline"
           git config user.email "ci-pipeline@shaytshikvashvili.com"
           git add deployment.yaml
