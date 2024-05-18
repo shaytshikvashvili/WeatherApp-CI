@@ -2,6 +2,8 @@ name: ci
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
@@ -32,6 +34,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Extract tag
+        run: echo tag=$(echo "${{steps.meta.outputs.tags}}" | head -n 1) >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -43,10 +48,9 @@ jobs:
         id: update_image
         run: |
           cd cd-repo/dev/
-          FIRST_TAG = $(echo "${{steps.meta.outputs.tags}}" | head -n 1)
-          sed -i "s|IMAGE_NAME|${FIRST_TAG}|" deployment.yaml
+          sed -i "s/IMAGE_NAME/${{ env.tag }}/" deployment.yaml
           git config user.name "CI Pipeline"
           git config user.email "ci-pipeline@shaytshikvashvili.com"
           git add deployment.yaml
-          git commit -m "Update image to ${FIRST_TAG}"
+          git commit -m "Update image to ${{ env.tag }}"
           git push
