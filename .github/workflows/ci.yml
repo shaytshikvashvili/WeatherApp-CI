@@ -1,9 +1,6 @@
 name: ci
 
 on:
-  push:
-    branches:
-      - main
     tags:
       - "v*"
 
@@ -34,23 +31,20 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Extract tag
-        run: echo tag=$(echo "${{steps.meta.outputs.tags}}" | head -n 1) >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: shaytshikvashvili/WeatherApp-CD
           path: cd-repo
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }
 
       - name: Update image tag in CD repo
         id: update_image
         run: |
           cd cd-repo/dev/
-          sed -i "s/IMAGE_NAME/${{ env.tag }}/" deployment.yaml
+          sed -i "s,IMAGE_NAME,${{ steps.meta.outputs.version }}," deployment.yaml
           git config user.name "CI Pipeline"
           git config user.email "ci-pipeline@shaytshikvashvili.com"
           git add deployment.yaml
-          git commit -m "Update image to ${{ env.tag }}"
+          git commit -m "Update image to ${{ steps.meta.outputs.version }}"
           git push
