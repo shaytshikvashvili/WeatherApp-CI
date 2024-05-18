@@ -1,18 +1,15 @@
-# Build stage
-FROM python:alpine AS build
+FROM python:alpine
 
 WORKDIR /app
-COPY requirements.txt ./
-RUN pip install -r requirements.txt -t .
-COPY . .
 
-# Deploy stage
-FROM nginx:alpine AS deploy
+COPY requirements.txt /app
 
-WORKDIR /app
-COPY --from=build /app /app
-COPY flask.conf /etc/nginx/conf.d
-RUN apk update && apk add --update py3-pip && pip install gunicorn
+RUN pip3 install -r requirements.txt
+
+COPY . /app
+
 EXPOSE 8080
 
-CMD gunicorn --bind 0.0.0.0:5000 wsgi:app & nginx -g 'daemon off;'
+ENTRYPOINT ["python3"]
+
+CMD ["app.py"]
