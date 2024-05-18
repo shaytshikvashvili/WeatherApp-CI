@@ -37,7 +37,7 @@ jobs:
         with:
           repository: shaytshikvashvili/WeatherApp-CD
           path: cd-repo
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Update image tag in CD repo
         id: update_image
